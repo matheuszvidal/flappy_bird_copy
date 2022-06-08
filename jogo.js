@@ -220,8 +220,31 @@ function criaCanos() {
                     canoChaoX, canoChaoY,
                     canos.largura, canos.altura,
                 )
+
+                par.canoCeu = {
+                    x: canoCeuX,
+                    y: canos.altura + canoCeuY
+                }
+                par.canoChao = {
+                    x: canoChaoX,
+                    y: canoChaoY
+                }
             })
 
+        },
+        temColisaoComOFlappyBird(par) {
+            const cabecaDoFlappy = globais.flappyBird.y
+            const peDoFlappy = globais.flappyBird.y + globais.flappyBird.altura
+
+            if(globais.flappyBird.x >= par.x) {
+                
+                if(cabecaDoFlappy <= par.canoCeu.y) {
+                    return true
+                }
+                if(peDoFlappy >= par.canoChao.y){
+                    return true
+                }
+            }
         },
         pares: [],
         atualiza() {
@@ -235,6 +258,11 @@ function criaCanos() {
 
             canos.pares.forEach(function(par) {
                 par.x = par.x - 2
+
+                if(canos.temColisaoComOFlappyBird(par)) {
+                    console.log('Voce perder')
+                    mudaParaTela(Telas.INICIO)
+                }
 
                 if(par.x + canos.largura <= 0) {
                     canos.pares.shift()
@@ -269,8 +297,7 @@ const Telas = {
         desenha() {
             background.desenha()
             globais.flappyBird.desenha()
-            globais.canos.desenha()
-            // mensagemGetReady.desenha()
+            mensagemGetReady.desenha()
             globais.chao.desenha()
         },
         click() {
@@ -278,7 +305,6 @@ const Telas = {
         },
         atualiza() {
             globais.chao.atualiza()
-            globais.canos.atualiza()
         }
     }
 }
@@ -286,6 +312,7 @@ const Telas = {
 Telas.JOGO = {
     desenha() {
         background.desenha()
+        globais.canos.desenha()
         globais.chao.desenha()
         globais.flappyBird.desenha()
     },
@@ -295,6 +322,7 @@ Telas.JOGO = {
     atualiza () {
         globais.flappyBird.atualiza()
         globais.chao.atualiza()
+        globais.canos.atualiza()
     }
 }
 

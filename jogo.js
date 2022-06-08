@@ -179,6 +179,72 @@ const mensagemGetReady = {
     }
 }
 
+function criaCanos() {
+    const canos = {
+        largura: 52,
+        altura: 400,
+        chao: {
+            spriteX: 0,
+            spriteY: 169,
+        },
+        ceu: {
+            spriteX: 52,
+            spriteY: 169,
+        },
+        espaco: 80,
+        desenha() {
+            
+            canos.pares.forEach(function(par) {
+                const espacamentoEntreCanos = 90
+                const yRandom = par.y
+    
+                const canoCeuX = par.x
+                const canoCeuY = yRandom
+
+                // [Cano do Céu]
+                contexto.drawImage(
+                    sprites,
+                    canos.ceu.spriteX, canos.ceu.spriteY,
+                    canos.largura, canos.altura,
+                    canoCeuX, canoCeuY,
+                    canos.largura, canos.altura,
+                )
+    
+                // [Cano do Chão]
+                const canoChaoX = par.x
+                const canoChaoY = canos.altura + espacamentoEntreCanos + yRandom
+                contexto.drawImage(
+                    sprites,
+                    canos.chao.spriteX, canos.chao.spriteY,
+                    canos.largura, canos.altura,
+                    canoChaoX, canoChaoY,
+                    canos.largura, canos.altura,
+                )
+            })
+
+        },
+        pares: [],
+        atualiza() {
+            const passou100Frames = frames % 100 === 0
+            if(passou100Frames) {
+                canos.pares.push({
+                    x: canvas.width,
+                    y: -150 * (Math.random() + 1),
+                })
+            }
+
+            canos.pares.forEach(function(par) {
+                par.x = par.x - 2
+
+                if(par.x + canos.largura <= 0) {
+                    canos.pares.shift()
+                }
+            })
+        }
+    }
+    return canos
+}
+
 
 //
 // [Screen]
@@ -198,18 +264,21 @@ const Telas = {
         inicializa() {
             globais.flappyBird = criaFlappyBird()
             globais.chao = criaChao()
+            globais.canos = criaCanos()
         },
         desenha() {
             background.desenha()
-            globais.chao.desenha()
             globais.flappyBird.desenha()
-            mensagemGetReady.desenha()
+            globais.canos.desenha()
+            // mensagemGetReady.desenha()
+            globais.chao.desenha()
         },
         click() {
             mudaParaTela(Telas.JOGO)
         },
         atualiza() {
             globais.chao.atualiza()
+            globais.canos.atualiza()
         }
     }
 }
